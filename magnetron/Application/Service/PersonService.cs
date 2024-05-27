@@ -3,6 +3,7 @@ using DB.Models.ViewModels;
 using System.Collections.Generic;
 using magnetron.Application.Interfaces;
 using magnetron.Domain.Models;
+using System;
 
 namespace magnetron.Application.Services
 {
@@ -17,37 +18,86 @@ namespace magnetron.Application.Services
 
         public IEnumerable<PersonDTO> GetAllPersons()
         {
-            return _personRepository.GetAll();
+            try
+            {
+                return _personRepository.GetAll();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Service Layer: An error occurred while retrieving all persons.", ex);
+            }
         }
 
         public PersonDTO GetPersonById(int id)
         {
-            return _personRepository.GetById(id);
+            try
+            {
+                return _personRepository.GetById(id);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Service Layer: An error occurred while retrieving the person with ID {id}.", ex);
+            }
         }
 
         public void CreatePerson(PersonDTO person)
         {
-            _personRepository.Add(person);
+            try
+            {
+                _personRepository.Add(person);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Service Layer: An error occurred while creating the person.", ex);
+            }
         }
 
         public void UpdatePerson(PersonDTO person)
         {
-            _personRepository.Update(person);
+            try
+            {
+                _personRepository.Update(person);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Service Layer: An error occurred while updating the person with ID {person.PersonId}.", ex);
+            }
         }
 
         public void DeletePerson(int id)
         {
-            _personRepository.Delete(id);
+            try
+            {
+                _personRepository.Delete(id);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Service Layer: An error occurred while deleting the person with ID {id}.", ex);
+            }
         }
 
         public IEnumerable<PersonTotalBilledViewModel> GetTotalBilledByPerson()
         {
-            return _personRepository.GetTotalBilledByPerson();
+            try
+            {
+                return _personRepository.GetTotalBilledByPerson();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Service Layer: An error occurred while retrieving the total billed by person.", ex);
+            }
         }
 
         public PersonMostExpensiveProductViewModel GetPersonWhoBoughtMostExpensiveProduct()
         {
-            return _personRepository.GetPersonWhoBoughtMostExpensiveProduct();
+            try
+            {
+                return _personRepository.GetPersonWhoBoughtMostExpensiveProduct();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Service Layer: An error occurred while retrieving the person who bought the most expensive product.", ex);
+            }
         }
     }
 }

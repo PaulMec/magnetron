@@ -1,7 +1,7 @@
 ﻿using magnetron.Application.Interfaces;
 using magnetron.Domain.Models;
-using DB.Models.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace magnetron.Presentation.Controllers
 {
@@ -19,58 +19,107 @@ namespace magnetron.Presentation.Controllers
         [HttpGet]
         public IActionResult GetAllPersons()
         {
-            var persons = _personService.GetAllPersons();
-            return Ok(persons);
+            try
+            {
+                var persons = _personService.GetAllPersons();
+                return Ok(persons);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving the persons.", error = ex.Message });
+            }
         }
 
         [HttpGet("{id}")]
         public IActionResult GetPersonById(int id)
         {
-            var person = _personService.GetPersonById(id);
-            if (person == null)
+            try
             {
-                return NotFound();
+                var person = _personService.GetPersonById(id);
+                if (person == null)
+                {
+                    return NotFound(new { message = "Person not found." });
+                }
+                return Ok(person);
             }
-            return Ok(person);
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving the person.", error = ex.Message });
+            }
         }
 
         [HttpPost]
         public IActionResult CreatePerson([FromBody] PersonDTO person)
         {
-            _personService.CreatePerson(person);
-            return CreatedAtAction(nameof(GetPersonById), new { id = person.PersonId }, person);
+            try
+            {
+                _personService.CreatePerson(person);
+                return CreatedAtAction(nameof(GetPersonById), new { id = person.PersonId }, person);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while creating the person.", error = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
         public IActionResult UpdatePerson(int id, [FromBody] PersonDTO person)
         {
-            if (id != person.PersonId)
+            try
             {
-                return BadRequest();
+                if (id != person.PersonId)
+                {
+                    return BadRequest(new { message = "Person ID mismatch." });
+                }
+                _personService.UpdatePerson(person);
+                return NoContent();
             }
-            _personService.UpdatePerson(person);
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while updating the person.", error = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
         public IActionResult DeletePerson(int id)
         {
-            _personService.DeletePerson(id);
-            return NoContent();
+            try
+            {
+                _personService.DeletePerson(id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while deleting the person.", error = ex.Message });
+            }
         }
 
         [HttpGet("total-billed")]
         public IActionResult GetTotalBilledByPerson()
         {
-            var persons = _personService.GetTotalBilledByPerson();
-            return Ok(persons);
+            try
+            {
+                var persons = _personService.GetTotalBilledByPerson();
+                return Ok(persons);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving the total billed by person.", error = ex.Message });
+            }
         }
 
         [HttpGet("most-expensive-product")]
         public IActionResult GetPersonWhoBoughtMostExpensiveProduct()
         {
-            var person = _personService.GetPersonWhoBoughtMostExpensiveProduct();
-            return Ok(person);
+            try
+            {
+                var person = _personService.GetPersonWhoBoughtMostExpensiveProduct();
+                return Ok(person);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving the person who bought the most expensive product.", error = ex.Message });
+            }
         }
     }
 }

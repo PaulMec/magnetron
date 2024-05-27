@@ -3,6 +3,7 @@ using DB.Models.ViewModels;
 using System.Collections.Generic;
 using magnetron.Application.Interfaces;
 using magnetron.Domain.Models;
+using System;
 
 namespace magnetron.Application.Services
 {
@@ -17,42 +18,98 @@ namespace magnetron.Application.Services
 
         public IEnumerable<ProductDTO> GetAllProducts()
         {
-            return _productRepository.GetAll();
+            try
+            {
+                return _productRepository.GetAll();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Service Layer: An error occurred while retrieving all products.", ex);
+            }
         }
 
         public ProductDTO GetProductById(int id)
         {
-            return _productRepository.GetById(id);
+            try
+            {
+                return _productRepository.GetById(id);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Service Layer: An error occurred while retrieving the product with ID {id}.", ex);
+            }
         }
 
         public void CreateProduct(ProductDTO product)
         {
-            _productRepository.Add(product);
+            try
+            {
+                _productRepository.Add(product);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Service Layer: An error occurred while creating the product.", ex);
+            }
         }
 
         public void UpdateProduct(ProductDTO product)
         {
-            _productRepository.Update(product);
+            try
+            {
+                _productRepository.Update(product);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Service Layer: An error occurred while updating the product with ID {product.ProductId}.", ex);
+            }
         }
 
         public void DeleteProduct(int id)
         {
-            _productRepository.Delete(id);
+            try
+            {
+                _productRepository.Delete(id);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Service Layer: An error occurred while deleting the product with ID {id}.", ex);
+            }
         }
 
         public IEnumerable<ProductSoldViewModel> GetProductsByQuantitySold()
         {
-            return _productRepository.GetSoldProducts();
+            try
+            {
+                return _productRepository.GetSoldProducts();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Service Layer: An error occurred while retrieving the products by quantity sold.", ex);
+            }
         }
 
         public IEnumerable<ProductProfitViewModel> GetProductsProfit()
         {
-            return _productRepository.GetProductsProfit();
+            try
+            {
+                return _productRepository.GetProductsProfit();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Service Layer: An error occurred while retrieving the products profit.", ex);
+            }
         }
 
         public IEnumerable<ProductProfitMarginViewModel> GetProductsProfitMargin()
         {
-            return _productRepository.GetProductsProfitMargin();
+            try
+            {
+                return _productRepository.GetProductsProfitMargin();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Service Layer: An error occurred while retrieving the products profit margin.", ex);
+            }
         }
     }
 }

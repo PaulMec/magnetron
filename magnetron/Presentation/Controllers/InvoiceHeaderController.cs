@@ -1,6 +1,7 @@
 ﻿using magnetron.Application.Interfaces;
 using magnetron.Domain.Models;
 using Microsoft.AspNetCore.Mvc;
+using System;
 
 namespace magnetron.Presentation.Controllers
 {
@@ -18,44 +19,79 @@ namespace magnetron.Presentation.Controllers
         [HttpGet]
         public IActionResult GetAllInvoiceHeaders()
         {
-            var headers = _invoiceHeaderService.GetAllInvoiceHeaders();
-            return Ok(headers);
+            try
+            {
+                var headers = _invoiceHeaderService.GetAllInvoiceHeaders();
+                return Ok(headers);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving the invoice headers.", error = ex.Message });
+            }
         }
 
         [HttpGet("{id}")]
         public IActionResult GetInvoiceHeaderById(int id)
         {
-            var header = _invoiceHeaderService.GetInvoiceHeaderById(id);
-            if (header == null)
+            try
             {
-                return NotFound();
+                var header = _invoiceHeaderService.GetInvoiceHeaderById(id);
+                if (header == null)
+                {
+                    return NotFound(new { message = "Invoice header not found." });
+                }
+                return Ok(header);
             }
-            return Ok(header);
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while retrieving the invoice header.", error = ex.Message });
+            }
         }
 
         [HttpPost]
         public IActionResult CreateInvoiceHeader([FromBody] InvoiceHeaderDTO header)
         {
-            _invoiceHeaderService.CreateInvoiceHeader(header);
-            return CreatedAtAction(nameof(GetInvoiceHeaderById), new { id = header.InvoiceHeaderId }, header);
+            try
+            {
+                _invoiceHeaderService.CreateInvoiceHeader(header);
+                return CreatedAtAction(nameof(GetInvoiceHeaderById), new { id = header.InvoiceHeaderId }, header);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while creating the invoice header.", error = ex.Message });
+            }
         }
 
         [HttpPut("{id}")]
         public IActionResult UpdateInvoiceHeader(int id, [FromBody] InvoiceHeaderDTO header)
         {
-            if (id != header.InvoiceHeaderId)
+            try
             {
-                return BadRequest();
+                if (id != header.InvoiceHeaderId)
+                {
+                    return BadRequest(new { message = "Invoice header ID mismatch." });
+                }
+                _invoiceHeaderService.UpdateInvoiceHeader(header);
+                return NoContent();
             }
-            _invoiceHeaderService.UpdateInvoiceHeader(header);
-            return NoContent();
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while updating the invoice header.", error = ex.Message });
+            }
         }
 
         [HttpDelete("{id}")]
         public IActionResult DeleteInvoiceHeader(int id)
         {
-            _invoiceHeaderService.DeleteInvoiceHeader(id);
-            return NoContent();
+            try
+            {
+                _invoiceHeaderService.DeleteInvoiceHeader(id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "An error occurred while deleting the invoice header.", error = ex.Message });
+            }
         }
     }
 }

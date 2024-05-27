@@ -1,6 +1,8 @@
 ﻿using magnetron.Application.Interfaces;
 using magnetron.Domain.Models;
 using magnetron.Infrastructure.Interfaces;
+using System;
+using System.Collections.Generic;
 
 namespace magnetron.Application.Service
 {
@@ -15,27 +17,62 @@ namespace magnetron.Application.Service
 
         public IEnumerable<InvoiceHeaderDTO> GetAllInvoiceHeaders()
         {
-            return _invoiceHeaderRepository.GetAll();
+            try
+            {
+                return _invoiceHeaderRepository.GetAll();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Service Layer: An error occurred while retrieving all invoice headers.", ex);
+            }
         }
 
         public InvoiceHeaderDTO GetInvoiceHeaderById(int id)
         {
-            return _invoiceHeaderRepository.GetById(id);
+            try
+            {
+                return _invoiceHeaderRepository.GetById(id);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Service Layer: An error occurred while retrieving the invoice header with ID {id}.", ex);
+            }
         }
 
         public void CreateInvoiceHeader(InvoiceHeaderDTO invoiceHeader)
         {
-            _invoiceHeaderRepository.Add(invoiceHeader);
+            try
+            {
+                _invoiceHeaderRepository.Add(invoiceHeader);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Service Layer: An error occurred while creating the invoice header.", ex);
+            }
         }
 
         public void UpdateInvoiceHeader(InvoiceHeaderDTO invoiceHeader)
         {
-            _invoiceHeaderRepository.Update(invoiceHeader);
+            try
+            {
+                _invoiceHeaderRepository.Update(invoiceHeader);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Service Layer: An error occurred while updating the invoice header with ID {invoiceHeader.InvoiceHeaderId}.", ex);
+            }
         }
 
         public void DeleteInvoiceHeader(int id)
         {
-            _invoiceHeaderRepository.Delete(id);
+            try
+            {
+                _invoiceHeaderRepository.Delete(id);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Service Layer: An error occurred while deleting the invoice header with ID {id}.", ex);
+            }
         }
     }
 }

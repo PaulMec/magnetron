@@ -1,6 +1,8 @@
 ﻿using magnetron.Application.Interfaces;
 using magnetron.Domain.Models;
 using magnetron.Infrastructure.Interfaces;
+using System;
+using System.Collections.Generic;
 
 namespace magnetron.Application.Services
 {
@@ -15,27 +17,62 @@ namespace magnetron.Application.Services
 
         public IEnumerable<InvoiceDetailDTO> GetAllInvoiceDetails()
         {
-            return _invoiceDetailRepository.GetAll();
+            try
+            {
+                return _invoiceDetailRepository.GetAll();
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Service Layer: An error occurred while retrieving all invoice details.", ex);
+            }
         }
 
         public InvoiceDetailDTO GetInvoiceDetailById(int id)
         {
-            return _invoiceDetailRepository.GetById(id);
+            try
+            {
+                return _invoiceDetailRepository.GetById(id);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Service Layer: An error occurred while retrieving the invoice detail with ID {id}.", ex);
+            }
         }
 
         public void CreateInvoiceDetail(InvoiceDetailDTO invoiceDetail)
         {
-            _invoiceDetailRepository.Add(invoiceDetail);
+            try
+            {
+                _invoiceDetailRepository.Add(invoiceDetail);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Service Layer: An error occurred while creating the invoice detail.", ex);
+            }
         }
 
         public void UpdateInvoiceDetail(InvoiceDetailDTO invoiceDetail)
         {
-            _invoiceDetailRepository.Update(invoiceDetail);
+            try
+            {
+                _invoiceDetailRepository.Update(invoiceDetail);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Service Layer: An error occurred while updating the invoice detail with ID {invoiceDetail.InvoiceDetailId}.", ex);
+            }
         }
 
         public void DeleteInvoiceDetail(int id)
         {
-            _invoiceDetailRepository.Delete(id);
+            try
+            {
+                _invoiceDetailRepository.Delete(id);
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException($"Service Layer: An error occurred while deleting the invoice detail with ID {id}.", ex);
+            }
         }
     }
 }
