@@ -10,7 +10,7 @@
 
 1. **Crear la Base de Datos**: Usa el siguiente script para crear la base de datos y las tablas necesarias.
 
-   ```sql
+  ```sql
    -- Usar la base de datos existente
    USE master;
    GO
@@ -62,103 +62,86 @@
    );
    GO
 
-   -- Crear vistas
-   IF OBJECT_ID('TotalFacturadoPorPersona', 'V') IS NOT NULL
-       DROP VIEW TotalFacturadoPorPersona;
-   GO
+-- Usar la base de datos existente
+USE DBMagnetron;
+GO
 
-   IF OBJECT_ID('PersonaProductoMasCaro', 'V') IS NOT NULL
-       DROP VIEW PersonaProductoMasCaro;
-   GO
+-- Vista para listar cada persona con el total facturado
+CREATE VIEW TotalFacturadoPorPersona AS
+SELECT 
+    P.PersonId,
+    P.FirstName,
+    P.LastName,
+    ISNULL(SUM(D.Quantity * Pr.Price), 0) AS TotalBilled
+FROM 
+    Person P
+LEFT JOIN 
+    InvoiceHeader H ON P.PersonId = H.PersonId
+LEFT JOIN 
+    InvoiceDetail D ON H.InvoiceHeaderId = D.InvoiceHeaderId
+LEFT JOIN 
+    Product Pr ON D.ProductId = Pr.ProductId
+GROUP BY 
+    P.PersonId, P.FirstName, P.LastName;
+GO
 
-   IF OBJECT_ID('ProductosPorCantidadFacturada', 'V') IS NOT NULL
-       DROP VIEW ProductosPorCantidadFacturada;
-   GO
+-- Vista para listar la persona que haya comprado el producto más caro
+CREATE VIEW PersonaProductoMasCaro AS
+SELECT TOP 1 
+    P.PersonId,
+    P.FirstName,
+    P.LastName,
+    Pr.Description,
+    Pr.Price
+FROM 
+    Person P
+JOIN 
+    InvoiceHeader H ON P.PersonId = H.PersonId
+JOIN 
+    InvoiceDetail D ON H.InvoiceHeaderId = D.InvoiceHeaderId
+JOIN 
+    Product Pr ON D.ProductId = Pr.ProductId
+ORDER BY 
+    Pr.Price DESC;
+GO
 
-   IF OBJECT_ID('ProductosPorUtilidad', 'V') IS NOT NULL
-       DROP VIEW ProductosPorUtilidad;
-   GO
+-- Vista para listar productos según su cantidad facturada en orden descendente
+CREATE VIEW ProductosPorCantidadFacturada AS
+SELECT 
+    Pr.ProductId,
+    Pr.Description,
+    CAST(SUM(D.Quantity) AS DECIMAL(18, 2)) AS QuantitySold
+FROM 
+    Product Pr
+JOIN 
+    InvoiceDetail D ON Pr.ProductId = D.ProductId
+GROUP BY 
+    Pr.ProductId, Pr.Description;
+GO
 
-   IF OBJECT_ID('ProductosMargenGanancia', 'V') IS NOT NULL
-       DROP VIEW ProductosMargenGanancia;
-   GO
+-- Vista para listar productos según su utilidad generada por facturación
+CREATE VIEW ProductosPorUtilidad AS
+SELECT 
+    Pr.ProductId,
+    Pr.Description,
+    CAST(SUM(D.Quantity * (Pr.Price - Pr.Cost)) AS DECIMAL(18, 2)) AS Profit
+FROM 
+    Product Pr
+JOIN 
+    InvoiceDetail D ON Pr.ProductId = D.ProductId
+GROUP BY 
+    Pr.ProductId, Pr.Description;
+GO
 
-   -- Vista para listar cada persona con el total facturado
-   CREATE VIEW TotalFacturadoPorPersona AS
-   SELECT 
-       P.PersonId,
-       P.FirstName,
-       P.LastName,
-       ISNULL(SUM(D.Quantity * Pr.Price), 0) AS TotalFacturado
-   FROM 
-       Person P
-   LEFT JOIN 
-       InvoiceHeader H ON P.PersonId = H.PersonId
-   LEFT JOIN 
-       InvoiceDetail D ON H.InvoiceHeaderId = D.InvoiceHeaderId
-   LEFT JOIN 
-       Product Pr ON D.ProductId = Pr.ProductId
-   GROUP BY 
-       P.PersonId, P.FirstName, P.LastName;
-   GO
-
-   -- Vista para listar la persona que haya comprado el producto más caro
-   CREATE VIEW PersonaProductoMasCaro AS
-   SELECT TOP 1 
-       P.PersonId,
-       P.FirstName,
-       P.LastName,
-       Pr.Description,
-       Pr.Price
-   FROM 
-       Person P
-   JOIN 
-       InvoiceHeader H ON P.PersonId = H.PersonId
-   JOIN 
-       InvoiceDetail D ON H.InvoiceHeaderId = D.InvoiceHeaderId
-   JOIN 
-       Product Pr ON D.ProductId = Pr.ProductId
-   ORDER BY 
-       Pr.Price DESC;
-   GO
-
-   -- Vista para listar productos según su cantidad facturada
-   CREATE VIEW ProductosPorCantidadFacturada AS
-   SELECT 
-       Pr.ProductId,
-       Pr.Description,
-       SUM(D.Quantity) AS QuantitySold
-   FROM 
-       Product Pr
-   JOIN 
-       InvoiceDetail D ON Pr.ProductId = D.ProductId
-   GROUP BY 
-       Pr.ProductId, Pr.Description;
-   GO
-
-   -- Vista para listar productos según su utilidad generada por facturación
-   CREATE VIEW ProductosPorUtilidad AS
-   SELECT 
-       Pr.ProductId,
-       Pr.Description,
-       SUM(D.Quantity * (Pr.Price - Pr.Cost)) AS Profit
-   FROM 
-       Product Pr
-   JOIN 
-       InvoiceDetail D ON Pr.ProductId = D.ProductId
-   GROUP BY 
-       Pr.ProductId, Pr.Description;
-   GO
-
-   -- Vista para listar productos y el margen de ganancia de cada uno según su facturación
-   CREATE VIEW ProductosMargenGanancia AS
-   SELECT 
-       Pr.ProductId,
-       Pr.Description,
-       (Pr.Price - Pr.Cost) AS ProfitMargin
-   FROM 
-       Product Pr;
-   GO
+-- Vista para listar productos y el margen de ganancia de cada uno según su facturación
+CREATE VIEW ProductosMargenGanancia AS
+SELECT 
+    Pr.ProductId,
+    Pr.Description,
+    CAST((Pr.Price - Pr.Cost) AS DECIMAL(18, 2)) AS ProfitMargin
+FROM 
+    Product Pr;
+GO
    ```
 
 2. **Insertar Datos de Prueba**: Usa el siguiente script para insertar datos de prueba.
