@@ -1,5 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
-using DB.Models;
+﻿using DB.Models;
+using DB.Models.ViewModels;
+using Microsoft.EntityFrameworkCore;
 
 namespace DB.Context
 {
@@ -12,8 +13,24 @@ namespace DB.Context
         public DbSet<InvoiceHeader> InvoiceHeaders { get; set; }
         public DbSet<InvoiceDetail> InvoiceDetails { get; set; }
 
+        // DbSet para las vistas SQL
+        public DbSet<ProductSoldViewModel> ProductSoldViewModels { get; set; }
+        public DbSet<ProductProfitViewModel> ProductProfitViewModels { get; set; }
+        public DbSet<ProductProfitMarginViewModel> ProductProfitMarginViewModels { get; set; }
+        public DbSet<PersonTotalBilledViewModel> PersonTotalBilledViewModels { get; set; }
+        public DbSet<PersonMostExpensiveProductViewModel> PersonMostExpensiveProductViewModels { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
+            // Configuración de las vistas SQL como entidades no mapeadas
+            modelBuilder.Entity<ProductSoldViewModel>().HasNoKey().ToView(null);
+            modelBuilder.Entity<ProductProfitViewModel>().HasNoKey().ToView(null);
+            modelBuilder.Entity<ProductProfitMarginViewModel>().HasNoKey().ToView(null);
+            modelBuilder.Entity<PersonTotalBilledViewModel>().HasNoKey().ToView(null);
+            modelBuilder.Entity<PersonMostExpensiveProductViewModel>().HasNoKey().ToView(null);
+
             modelBuilder.Entity<Person>().ToTable("Person");
             modelBuilder.Entity<Product>().ToTable("Product");
             modelBuilder.Entity<InvoiceHeader>().ToTable("InvoiceHeader");

@@ -11,60 +11,10 @@
 ### Script SQL para Crear la Base de Datos y Tablas
 
 ```sql
--- Crear la base de datos
-CREATE DATABASE DBMagnetron;
-GO
-
--- Usar la base de datos recién creada
+-- Usar la base de datos existente
 USE DBMagnetron;
 GO
 
--- Tabla Persona
-CREATE TABLE Person (
-    PersonId INT PRIMARY KEY IDENTITY,
-    FirstName NVARCHAR(50) NOT NULL,
-    LastName NVARCHAR(50) NOT NULL,
-    DocumentType NVARCHAR(20) NOT NULL,
-    DocumentNumber NVARCHAR(20) NOT NULL
-);
-GO
-
--- Tabla Producto
-CREATE TABLE Product (
-    ProductId INT PRIMARY KEY IDENTITY,
-    Description NVARCHAR(100) NOT NULL,
-    Price DECIMAL(18, 2) NOT NULL,
-    Cost DECIMAL(18, 2) NOT NULL,
-    UnitOfMeasure NVARCHAR(20) NOT NULL
-);
-GO
-
--- Tabla Fact_Encabezado
-CREATE TABLE InvoiceHeader (
-    InvoiceHeaderId INT PRIMARY KEY IDENTITY,
-    InvoiceNumber INT NOT NULL,
-    InvoiceDate DATETIME NOT NULL,
-    PersonId INT NOT NULL,
-    FOREIGN KEY (PersonId) REFERENCES Person(PersonId)
-);
-GO
-
--- Tabla Fact_Detalle
-CREATE TABLE InvoiceDetail (
-    InvoiceDetailId INT PRIMARY KEY IDENTITY,
-    LineNumber INT NOT NULL,
-    Quantity INT NOT NULL,
-    ProductId INT NOT NULL,
-    InvoiceHeaderId INT NOT NULL,
-    FOREIGN KEY (ProductId) REFERENCES Product(ProductId),
-    FOREIGN KEY (InvoiceHeaderId) REFERENCES InvoiceHeader(InvoiceHeaderId)
-);
-GO
-```
-
-### Script SQL para Crear Vistas
-
-```sql
 -- Vista para listar cada persona con el total facturado
 CREATE VIEW TotalFacturadoPorPersona AS
 SELECT 
@@ -109,7 +59,7 @@ CREATE VIEW ProductosPorCantidadFacturada AS
 SELECT 
     Pr.ProductId,
     Pr.Description,
-    SUM(D.Quantity) AS CantidadFacturada
+    SUM(D.Quantity) AS QuantitySold
 FROM 
     Product Pr
 JOIN 
@@ -117,7 +67,7 @@ JOIN
 GROUP BY 
     Pr.ProductId, Pr.Description
 ORDER BY 
-    CantidadFacturada DESC;
+    QuantitySold DESC;
 GO
 
 -- Vista para listar productos según su utilidad generada por facturación
@@ -125,7 +75,7 @@ CREATE VIEW ProductosPorUtilidad AS
 SELECT 
     Pr.ProductId,
     Pr.Description,
-    SUM(D.Quantity * (Pr.Price - Pr.Cost)) AS Utilidad
+    SUM(D.Quantity * (Pr.Price - Pr.Cost)) AS Profit
 FROM 
     Product Pr
 JOIN 
@@ -133,7 +83,7 @@ JOIN
 GROUP BY 
     Pr.ProductId, Pr.Description
 ORDER BY 
-    Utilidad DESC;
+    Profit DESC;
 GO
 
 -- Vista para listar productos y el margen de ganancia de cada uno según su facturación
@@ -141,21 +91,31 @@ CREATE VIEW ProductosMargenGanancia AS
 SELECT 
     Pr.ProductId,
     Pr.Description,
-    (Pr.Price - Pr.Cost) AS MargenGanancia
+    (Pr.Price - Pr.Cost) AS ProfitMargin
 FROM 
     Product Pr;
 GO
-```
+
 
 ### Script SQL para Insertar Registros de Prueba
 
 ```sql
+-- Usar la base de datos existente
+USE DBMagnetron;
+GO
+
 -- Insertar registros en la tabla Person
 INSERT INTO Person (FirstName, LastName, DocumentType, DocumentNumber) VALUES 
 ('John', 'Doe', 'DNI', '12345678'),
 ('Jane', 'Smith', 'DNI', '87654321'),
 ('Alice', 'Johnson', 'Passport', 'A1234567'),
-('Bob', 'Brown', 'Passport', 'B7654321');
+('Bob', 'Brown', 'Passport', 'B7654321'),
+('Charlie', 'Black', 'DNI', '13579246'),
+('Dave', 'White', 'DNI', '24681357'),
+('Eve', 'Green', 'Passport', 'C9876543'),
+('Frank', 'Blue', 'Passport', 'D8765432'),
+('Grace', 'Red', 'DNI', '31415926'),
+('Hank', 'Yellow', 'DNI', '27182818');
 GO
 
 -- Insertar registros en la tabla Product
@@ -163,15 +123,27 @@ INSERT INTO Product (Description, Price, Cost, UnitOfMeasure) VALUES
 ('Laptop', 1000.00, 800.00, 'Unit'),
 ('Smartphone', 600.00, 400.00, 'Unit'),
 ('Tablet', 400.00, 250.00, 'Unit'),
-('Monitor', 200.00, 150.00, 'Unit');
+('Monitor', 200.00, 150.00, 'Unit'),
+('Keyboard', 50.00, 30.00, 'Unit'),
+('Mouse', 25.00, 10.00, 'Unit'),
+('Printer', 150.00, 100.00, 'Unit'),
+('Scanner', 120.00, 80.00, 'Unit'),
+('Webcam', 80.00, 50.00, 'Unit'),
+('Headphones', 75.00, 40.00, 'Unit');
 GO
 
 -- Insertar registros en la tabla InvoiceHeader
 INSERT INTO InvoiceHeader (InvoiceNumber, InvoiceDate, PersonId) VALUES 
-(1, '2023-01-01', 1),
-(2, '2023-01-02', 2),
-(3, '2023-01-03', 1),
-(4, '2023-01-04', 3);
+(1001, '2024-05-01', 1),
+(1002, '2024-05-02', 2),
+(1003, '2024-05-03', 3),
+(1004, '2024-05-04', 4),
+(1005, '2024-05-05', 5),
+(1006, '2024-05-06', 6),
+(1007, '2024-05-07', 7),
+(1008, '2024-05-08', 8),
+(1009, '2024-05-09', 9),
+(1010, '2024-05-10', 10);
 GO
 
 -- Insertar registros en la tabla InvoiceDetail
@@ -181,8 +153,22 @@ INSERT INTO InvoiceDetail (LineNumber, Quantity, ProductId, InvoiceHeaderId) VAL
 (1, 3, 3, 2),
 (1, 1, 4, 3),
 (2, 2, 2, 3),
-(1, 5, 1, 4);
+(1, 1, 5, 4),
+(2, 2, 6, 4),
+(1, 1, 7, 5),
+(2, 2, 8, 5),
+(1, 1, 9, 6),
+(2, 2, 10, 6),
+(1, 3, 1, 7),
+(2, 2, 3, 7),
+(1, 1, 4, 8),
+(2, 3, 5, 8),
+(1, 2, 6, 9),
+(2, 1, 7, 9),
+(1, 3, 8, 10),
+(2, 2, 9, 10);
 GO
+
 ```
 
 ### Explicación
