@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34723.18
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "magnetron", "magnetron\magnetron.csproj", "{D6A67346-6A66-4C5F-AECE-2448BFCD62EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DB", "DB\DB.csproj", "{A49D9A56-6F71-45E3-A3CD-71DF7F1EA281}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D6A67346-6A66-4C5F-AECE-2448BFCD62EF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D6A67346-6A66-4C5F-AECE-2448BFCD62EF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D6A67346-6A66-4C5F-AECE-2448BFCD62EF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D6A67346-6A66-4C5F-AECE-2448BFCD62EF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A49D9A56-6F71-45E3-A3CD-71DF7F1EA281}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A49D9A56-6F71-45E3-A3CD-71DF7F1EA281}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A49D9A56-6F71-45E3-A3CD-71DF7F1EA281}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A49D9A56-6F71-45E3-A3CD-71DF7F1EA281}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {809CB25A-B04C-43B3-8276-14823312BC5D}
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,6 @@
+@magnetron_HostAddress = http://localhost:5231
+
+GET {{magnetron_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
