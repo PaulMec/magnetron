@@ -141,12 +141,3 @@ Utilizado para el acceso a datos debido a su facilidad de uso, integración con 
 
 ### Docker
 Utilizado para la creación de contenedores que facilitan el despliegue y la portabilidad de la aplicación.
-
-## Licencia
-Este proyecto está bajo la licencia MIT. Consulta el archivo LICENSE para más detalles.
-
-## Estándares de Código
-
-- Sigue los principios SOLID y las mejores prácticas de desarrollo.
-- Asegúrate de que todo el código nuevo esté cubierto por pruebas unitarias.
-- Usa nombres de variables y funciones descriptivos.
