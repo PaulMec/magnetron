@@ -1,98 +1,152 @@
-### Documento README
+### README.md
 
 ```markdown
-# Proyecto de Facturación
+# Magnetron
 
-## Descripción
+Magnetron es una aplicación de facturación diseñada para gestionar productos, personas, y facturas. Esta solución se implementa utilizando una arquitectura de capas (Onion Architecture) que separa las responsabilidades en diferentes capas, asegurando un código más limpio y mantenible.
 
-Este proyecto es una aplicación de facturación de productos que permite gestionar clientes, productos y facturas. La aplicación está desarrollada en .NET 8 utilizando Entity Framework Core para el acceso a datos y SQL Server como base de datos relacional.
-
-## Funcionalidades
-
-- CRUD de Personas
-- CRUD de Productos
-- CRUD de Facturas
-- Vistas SQL para obtener:
-  - Total facturado por cada persona
-  - Persona que compró el producto más caro
-  - Productos ordenados por cantidad facturada
-  - Productos ordenados por utilidad generada
-  - Margen de ganancia de cada producto
-
-## Requisitos
-
-- .NET 8 SDK
-- SQL Server
-- Docker (opcional, para despliegue con contenedores)
+## Tabla de Contenidos
+- [Instalación](#instalación)
+- [Uso](#uso)
+- [API](#api)
+- [Pruebas](#pruebas)
+- [Dockerización](#dockerización)
+- [Decisiones de Diseño](#decisiones-de-diseño)
+- [Herramientas Seleccionadas](#herramientas-seleccionadas)
+- [Contribución](#contribución)
 
 ## Instalación
 
-1. Clonar el repositorio:
+### Requisitos Previos
+- [.NET SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
+- [SQL Server](https://www.microsoft.com/en-us/sql-server/sql-server-downloads)
+- [Docker](https://www.docker.com/products/docker-desktop) (Opcional, para despliegue con contenedores)
 
+### Configuración
+1. Clona el repositorio:
    ```bash
-   git clone <URL_DEL_REPOSITORIO>
-   cd <NOMBRE_DEL_PROYECTO>
+   git clone https://github.com/PaulMec/magnetron.git
+   cd magnetron
    ```
 
-2. Configurar la cadena de conexión en `appsettings.json`.
+2. Configura la base de datos:
+   - Actualiza el archivo `appsettings.json` con tu cadena de conexión a la base de datos.
 
-3. Restaurar los paquetes NuGet:
-
-   ```bash
-   dotnet restore
-   ```
-
-4. Aplicar las migraciones:
-
+3. Ejecuta las migraciones para crear la base de datos:
    ```bash
    dotnet ef database update
    ```
 
-5. Ejecutar la aplicación:
-
+4. Compila y ejecuta el proyecto:
    ```bash
+   dotnet build
    dotnet run
    ```
 
+## Uso
+
+Una vez que la aplicación está en ejecución, puedes acceder a la API mediante `http://localhost:5000/swagger` para ver la documentación interactiva de los endpoints disponibles.
+
+## API
+
+### Endpoints Principales
+- **Personas**
+  - `GET /api/persons` - Obtener todas las personas
+  - `GET /api/persons/{id}` - Obtener una persona por ID
+  - `POST /api/persons` - Crear una nueva persona
+  - `PUT /api/persons/{id}` - Actualizar una persona
+  - `DELETE /api/persons/{id}` - Eliminar una persona
+
+- **Productos**
+  - `GET /api/products` - Obtener todos los productos
+  - `GET /api/products/{id}` - Obtener un producto por ID
+  - `POST /api/products` - Crear un nuevo producto
+  - `PUT /api/products/{id}` - Actualizar un producto
+  - `DELETE /api/products/{id}` - Eliminar un producto
+
+- **Facturas**
+  - `GET /api/invoices` - Obtener todas las facturas
+  - `GET /api/invoices/{id}` - Obtener una factura por ID
+  - `POST /api/invoices` - Crear una nueva factura
+  - `PUT /api/invoices/{id}` - Actualizar una factura
+  - `DELETE /api/invoices/{id}` - Eliminar una factura
+
+Para una documentación completa de la API, visita `http://localhost:5000/swagger` una vez que la aplicación esté en ejecución.
+
+## Pruebas
+
+### Ejecución de Pruebas Unitarias
+El proyecto incluye pruebas unitarias para asegurar la calidad del código. Para ejecutar las pruebas, utiliza el siguiente comando:
+```bash
+dotnet test
+```
+
+### Cobertura de Pruebas
+La cobertura de pruebas se genera utilizando [coverlet](https://github.com/coverlet-coverage/coverlet). Para generar un informe de cobertura, usa el siguiente comando:
+```bash
+dotnet test /p:CollectCoverage=true /p:CoverletOutputFormat=opencover
+```
+
 ## Dockerización
 
-1. Crear la imagen Docker:
+### Configuración de Docker
+El proyecto incluye un archivo `Dockerfile` y un `docker-compose.yml` para facilitar la configuración y el despliegue en contenedores.
 
-   ```bash
-   docker build -t nombre-del-proyecto .
-   ```
+### Construcción y Ejecución
+Para construir y ejecutar el contenedor Docker, utiliza los siguientes comandos:
+```bash
+docker-compose build
+docker-compose up
+```
 
-2. Ejecutar el contenedor:
+Esto levantará los servicios definidos en `docker-compose.yml`, incluyendo la aplicación y la base de datos.
 
-   ```bash
-   docker run -d -p 8080:80 nombre-del-proyecto
-   ```
+## Decisiones de Diseño
 
-## Documentación de API
+### Arquitectura
+Se ha adoptado una arquitectura de capas (Onion Architecture) para separar claramente las responsabilidades y asegurar la mantenibilidad del código. Las capas incluyen:
+- **Capa de Presentación:** Controladores que manejan las solicitudes HTTP.
+- **Capa de Aplicación:** Servicios que contienen la lógica de negocio.
+- **Capa de Dominio:** Modelos de dominio y lógica empresarial.
+- **Capa de Infraestructura:** Implementaciones de acceso a datos y repositorios.
 
-La documentación de la API se puede acceder a través de Swagger en la ruta `/swagger` cuando la aplicación está en ejecución.
+### Patrones de Diseño
+- **Patrón Repositorio:** Se utiliza para abstraer el acceso a los datos y asegurar que el código de acceso a datos esté aislado.
+- **Inyección de Dependencias:** Se utiliza para facilitar la inyección de servicios y repositorios en los controladores y servicios de aplicación.
+
+### Validaciones y Manejo de Excepciones
+Se implementan validaciones en los modelos y se maneja adecuadamente las excepciones para asegurar que la aplicación sea robusta y fácil de depurar.
 
 ## Ventajas y Desventajas
-
 ### Ventajas
-
-- Uso de Entity Framework Core para facilitar el acceso y manejo de datos.
-- Arquitectura limpia y modular basada en principios SOLID.
-- Dockerización para facilitar el despliegue y la portabilidad.
-- Uso de vistas SQL para optimizar las consultas y cálculos.
+Mantenibilidad: La arquitectura en capas permite un código más limpio y organizado, facilitando el mantenimiento y la extensión de la aplicación.
+Pruebas Unitarias: La separación de responsabilidades facilita la creación de pruebas unitarias efectivas, asegurando la calidad del código.
+Portabilidad: El uso de Docker permite desplegar la aplicación en diferentes entornos sin problemas de configuración.
 
 ### Desventajas
+Complejidad Inicial: La implementación de una arquitectura en capas puede aumentar la complejidad inicial del proyecto.
+Curva de Aprendizaje: La necesidad de comprender múltiples capas y patrones de diseño puede ser un desafío para desarrolladores menos experimentados.
 
-- Dependencia de SQL Server, lo que puede limitar la portabilidad si se desea utilizar otro sistema de gestión de bases de datos.
-- Complejidad adicional al manejar vistas SQL y sincronización con Entity Framework.
+## Herramientas Seleccionadas
 
-## Motivos de Selección de Herramientas
+### .NET
+Elegido por su alto rendimiento, soporte a largo plazo y robustez en el desarrollo de aplicaciones web y APIs.
 
-- **.NET 8**: Framework moderno y robusto con gran soporte para desarrollo web y de APIs.
-- **Entity Framework Core**: Proporciona una forma intuitiva y poderosa de interactuar con la base de datos.
-- **SQL Server**: Sistema de gestión de bases de datos relacional confiable y con buenas capacidades de integración.
-- **Docker**: Facilita la creación, despliegue y ejecución de aplicaciones en contenedores, garantizando consistencia en diferentes entornos.
+### Entity Framework Core
+Utilizado para el acceso a datos debido a su facilidad de uso, integración con .NET y capacidades avanzadas de mapeo objeto-relacional.
 
-## Contribución
+### xUnit y Moq
+- **xUnit:** Framework de pruebas unitarias utilizado por su simplicidad y funcionalidad.
+- **Moq:** Biblioteca de mocking utilizada para aislar las dependencias en las pruebas unitarias.
 
-Si deseas contribuir a este proyecto, por favor crea un fork del repositorio y abre un pull request con tus cambios.
+### Docker
+Utilizado para la creación de contenedores que facilitan el despliegue y la portabilidad de la aplicación.
+
+## Licencia
+Este proyecto está bajo la licencia MIT. Consulta el archivo LICENSE para más detalles.
+
+## Estándares de Código
+
+- Sigue los principios SOLID y las mejores prácticas de desarrollo.
+- Asegúrate de que todo el código nuevo esté cubierto por pruebas unitarias.
+- Usa nombres de variables y funciones descriptivos.
